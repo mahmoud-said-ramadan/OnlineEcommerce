@@ -21,7 +21,7 @@ export const createOrder = joi.object({
 
 
 export const cancelOrder = joi.object({
-    reason: joi.string().min(1).required(),
+    // reason: joi.string().min(1).required(),
     id: generalFields.id,
 }).required()
 

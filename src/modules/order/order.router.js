@@ -22,7 +22,7 @@ router.post('/',
     orderController.createOrder
 )
 router.get('/',
-    auth(endPoint.cancel),
+    // auth(endPoint.cancel),
     validation(validators.cancelOrder),
     orderController.cancelOrder
 )
