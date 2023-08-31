@@ -21,7 +21,7 @@ router.post('/',
     validation(validators.createOrder),
     orderController.createOrder
 )
-router.get('/id',
+router.get('/',
     auth(endPoint.cancel),
     validation(validators.cancelOrder),
     orderController.cancelOrder
