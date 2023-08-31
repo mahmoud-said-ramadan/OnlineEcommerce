@@ -153,7 +153,7 @@ export const createOrder = asyncHandler(
 
 export const cancelOrder = asyncHandler(
     async (req, res, next) => {
-        const { id } = req.params;
+        const { id } = req.query;
         const { reason } = req.body;
         const order = await orderModel.findOne({ _id: id, userId: req.user._id })
         if (!order) {
