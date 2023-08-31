@@ -190,6 +190,7 @@ export const updateStatus = asyncHandler(
         return res.status(200).json({ message: 'Done!' })
     })
 
+
 export const webhook = asyncHandler(async (req, res) => {
     const stripe = new Stripe(process.env.STRIPE_KEY);
     const sig = req.headers['stripe-signature'];
@@ -210,5 +211,5 @@ export const webhook = asyncHandler(async (req, res) => {
     }
     await orderModel.updateOne({ _id: event.data.object.metadata.orderId }, { status: "placed" })
     // Return a 200 res to acknowledge receipt of the event
-    res.status(200).send({message:"Done!"});
+    res.status(200).send({ message: "Done!" });
 })
