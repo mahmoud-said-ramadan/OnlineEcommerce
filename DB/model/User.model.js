@@ -53,6 +53,7 @@ const userSchema = new Schema({
     image: Object,
     DOB: String,
     customId: String,
+    changedAt: Date,
 }, {
     timestamps: true
 })

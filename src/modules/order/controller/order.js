@@ -162,7 +162,7 @@ export const cancelOrder = asyncHandler(
             return next(new Error(`Can NOT Cancel Your Order While it is in ${order.status} Step`, { cause: 400 }));
         }
 
-        const cancelOrder = await orderModel.updateOne({ _id: order._id }, { status: 'canceled'})
+        const cancelOrder = await orderModel.updateOne({ _id: order._id }, { status: 'canceled' })
         if (!cancelOrder.matchedCount) {
             return next(new Error(`Fail To Cancel Your Order!`, { cause: 400 }));
         }
@@ -241,4 +241,25 @@ export const webhook = asyncHandler(async (req, res) => {
     await orderModel.updateOne({ _id: event.data.object.metadata.orderId }, { status: "placed" })
     // Return a 200 res to acknowledge receipt of the event
     res.status(200).send({ message: "Done!" });
+})
+
+export const refund = asyncHandler(async (req, res) => {
+    try {
+    const stripe = new Stripe(process.env.STRIPE_KEY);
+        const { paymentId, amount } = req.body; // Assuming you receive the payment ID and refund amount from the client
+
+        // Make the refund request to Stripe
+        const refund = await stripe.refunds.create({
+            payment_intent: paymentId,
+            amount: amount,
+        });
+
+        // Handle the refund response
+        // You can perform additional actions here, such as updating your database or sending a confirmation email to the customer
+
+        res.status(200).send({ success: true, refund: refund });
+    } catch (error) {
+        console.error('Error processing refund:', error);
+        res.status(500).send({ success: false, error: error.message });
+    }
 })

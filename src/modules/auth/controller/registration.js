@@ -112,7 +112,7 @@ export const confirmChangeEmail = asyncHandler(async (req, res, next) => {
         if (await userModel.findOne({ email: decoded.email })) {
             return next(new Error("This Email Already Confirmed To Another User!", { cause: 409 }));
         }
-        const user = await userModel.findByIdAndUpdate(decoded.id, { confirmEmail: true, email: decoded.email, tempEmail: '' }, { new: true });
+        const user = await userModel.findByIdAndUpdate(decoded.id, { confirmEmail: true, email: decoded.email, tempEmail: '', changedAt: Date.now() }, { new: true });
         if (user) {
             // let message = "Email Confirmed Successfully!";
             // return res.redirect(`../../../../front/html/confirmation.html?message=${message}`);
@@ -158,7 +158,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     if (decoded) {
         // Hash password
         const hashed = hash({ plaintext: req.body.newPassword });
-        if (!await userModel.findByIdAndUpdate(decoded.id, { password: hashed })) {
+        if (!await userModel.findByIdAndUpdate(decoded.id, { password: hashed, changedAt: Date.now() })) {
             return next(new Error("NOT REGISTERED!", { cause: 404 }));
         }
         // let message = "Email Confirmed Successfully!";
