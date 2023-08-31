@@ -31,6 +31,9 @@ const initApp = (app, express) => {
     app.use(express.json({}))
 
     //Setup API Routing 
+    app.get("/", (req,res,next)=>{
+        return res.json({message: 'Welcome to E-Commerce'})
+    })
     app.use(`/auth`, authRouter)
     app.use(`/user`, userRouter)
     app.use(`/product`, productRouter)
@@ -42,7 +45,7 @@ const initApp = (app, express) => {
     app.use(`/order`, orderRouter)
     app.use(`/brand`, branRouter)
     app.all('*', (req, res, next) => {
-        res.send("In-valid Routing Plz check url  or  method")
+        res.status(404).send("In-valid Routing Plz check url  or  method")
     })
     app.use(globalErrorHandling)
     connectDB()
