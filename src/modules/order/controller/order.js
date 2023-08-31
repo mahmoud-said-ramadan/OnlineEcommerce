@@ -72,7 +72,7 @@ export const createOrder = asyncHandler(
             userId: req.user._id,
             products: finalProductList,
             address,
-            phone: phone ? phone : decryptPhone(req.user).phone,
+            phone: phone ? phone : (decryptPhone(req.user)).phone,
             note,
             coupon: req.body.coupon?.name,
             discount: (subTotal * ((req.body.coupon?.amount || 0) / 100)).toFixed(2),
