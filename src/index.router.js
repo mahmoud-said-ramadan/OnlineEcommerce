@@ -29,7 +29,7 @@ const initApp = (app, express) => {
     app.use(cors())
     //convert Buffer Data
     app.use((req, res, next) => {
-        if (req.originalUrl == 'order/webhook') {
+        if (req.originalUrl == '/order/webhook') {
             next();
         }
         else {
