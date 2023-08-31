@@ -49,7 +49,7 @@ export const changePassword = asyncHandler(
         const match = compare({ plaintext: oldPassword, hashValue: password });
         if (match) {
             const hashedPassword = doHashing(newPassword);
-            await userModel.findByIdAndUpdate({ _id }, { password: hashedPassword, changedAt: Date.now() });
+            await userModel.findByIdAndUpdate({ _id }, { password: hashedPassword, changedAt: Date.now()});
             return res.status(202).json({
                 message: "Done!",
                 status: { cause: 202 }

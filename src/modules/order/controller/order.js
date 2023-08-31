@@ -8,6 +8,7 @@ import { sendMail } from "../../../utils/email.js";
 import { nanoid } from "nanoid";
 import payment from "../../../utils/payment.js";
 import Stripe from "stripe";
+import { decryptPhone } from "../../../utils/Hash-Encrypt.js";
 
 
 
@@ -71,7 +72,7 @@ export const createOrder = asyncHandler(
             userId: req.user._id,
             products: finalProductList,
             address,
-            phone: phone ? phone : req.user.phone,
+            phone: phone ? phone : decryptPhone(req.user).phone,
             note,
             coupon: req.body.coupon?.name,
             discount: (subTotal * ((req.body.coupon?.amount || 0) / 100)).toFixed(2),

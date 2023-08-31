@@ -20,7 +20,7 @@ export const auth = (accesRoles = []) => {
         if (!token) {
             return next(new Error('In-Valid Token!', { cause: 400 }))
         }
-        
+
         const decoded = verifyToken({ token });
         if (!decoded?.id) {
             return next(new Error('In-Valid Payload!', { cause: 400 }))
@@ -29,7 +29,7 @@ export const auth = (accesRoles = []) => {
         if (!user) {
             return next(new Error('Not Registered User!', { cause: 401 }))
         }
-        if (token.iat < user.changedAt) {
+        if (new Date(decoded.iat) < parseInt(new Date(user?.changedAt).getTime() / 1000)) {
             return next(new Error('You have to Login Again!', { cause: 401 }))
         }
         if (user.status !== 'online' || !user.confirmEmail) {
