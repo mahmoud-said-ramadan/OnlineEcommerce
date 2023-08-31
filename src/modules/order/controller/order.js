@@ -154,8 +154,7 @@ export const createOrder = asyncHandler(
 export const cancelOrder = asyncHandler(
     async (req, res, next) => {
         const { id } = req.query;
-        const { reason } = req.body;
-        const order = await orderModel.findOne({ _id: id, userId: req.user._id })
+        const order = await orderModel.findOne({ _id: id })
         if (!order) {
             return next(new Error(`In-Valid Order`, { cause: 404 }));
         }
@@ -163,7 +162,7 @@ export const cancelOrder = asyncHandler(
             return next(new Error(`Can NOT Cancel Your Order While it is in ${order.status} Step`, { cause: 400 }));
         }
 
-        const cancelOrder = await orderModel.updateOne({ _id: order._id }, { status: 'canceled', reason, updatedBy: req.user._id })
+        const cancelOrder = await orderModel.updateOne({ _id: order._id }, { status: 'canceled'})
         if (!cancelOrder.matchedCount) {
             return next(new Error(`Fail To Cancel Your Order!`, { cause: 400 }));
         }
@@ -179,6 +178,36 @@ export const cancelOrder = asyncHandler(
         }
         return res.status(200).json({ message: 'Done!' })
     })
+
+
+// export const cancelOrder = asyncHandler(
+//     async (req, res, next) => {
+//         const { id } = req.query;
+//         const { reason } = req.body;
+//         const order = await orderModel.findOne({ _id: id, userId: req.user._id })
+//         if (!order) {
+//             return next(new Error(`In-Valid Order`, { cause: 404 }));
+//         }
+//         if ((order.status != 'placed' && order.paymentType == 'cash') || (order.status != 'waitPayment' && order.paymentType == 'card')) {
+//             return next(new Error(`Can NOT Cancel Your Order While it is in ${order.status} Step`, { cause: 400 }));
+//         }
+
+//         const cancelOrder = await orderModel.updateOne({ _id: order._id }, { status: 'canceled', reason, updatedBy: req.user._id })
+//         if (!cancelOrder.matchedCount) {
+//             return next(new Error(`Fail To Cancel Your Order!`, { cause: 400 }));
+//         }
+
+//         for (const product of order.products) {
+//             await productModel.updateOne({ _id: product.productId },
+//                 { $inc: { stock: parseInt(product.quantity) } })
+//         }
+
+//         if (order.couponId) {
+//             await couponModel.updateOne({ _id: order.couponId },
+//                 { $pull: { usedBy: req.user._id } })
+//         }
+//         return res.status(200).json({ message: 'Done!' })
+//     })
 
 export const updateStatus = asyncHandler(
     async (req, res, next) => {
