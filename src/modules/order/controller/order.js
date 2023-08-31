@@ -6,6 +6,8 @@ import { asyncHandler } from "../../../utils/errorHandling.js";
 import { createOrderMail } from "../../../utils/order-email.js";
 import { sendMail } from "../../../utils/email.js";
 import { nanoid } from "nanoid";
+import payment from "../../../utils/payment.js";
+import Stripe from "stripe";
 
 
 
@@ -15,7 +17,7 @@ export const createOrder = asyncHandler(
     async (req, res, next) => {
         let { products, address, phone, note, coupon, paymentType } = req.body;
         if (coupon) {
-            const couponExist = await couponModel.findOne({ name: coupon.toLowerCase() })
+            const couponExist = await couponModel.findOne({ name: coupon.toLowerCase(), deletedBy: { $eq: null } })
             if (!couponExist) {
                 return next(new Error('In-Valid Coupon', { cause: 404 }))
             }
@@ -64,18 +66,7 @@ export const createOrder = asyncHandler(
             finalProductList.push(product)
             subTotal += product.totalPrice
         }
-        // const dumyOrder = {
-        //     userId: req.user._id,
-        //     products: finalProductList,
-        //     address,
-        //     phone,
-        //     note,
-        //     couponId: req.body.coupon?._id,
-        //     subTotal,
-        //     finalPrice: subTotal - (subTotal * ((req.body.coupon?.amount || 0) / 100)).toFixed(2),
-        //     paymentType,
-        //     status: paymentType ? 'waitPayment' : 'placed'
-        // }
+
         const order = await orderModel.create({
             userId: req.user._id,
             products: finalProductList,
@@ -116,14 +107,48 @@ export const createOrder = asyncHandler(
         else {
             await cartModel.updateOne({ userId: req.user._id }, { products: [] })
         }
-
+        //Send Mail with order info.
         const html = createOrderMail({ userName: req.user.userName, order });
-        //Send Confirmation Mail
         if (!await sendMail({ to: 'mahmoudsaid.r22@gmail.com', subject: "Confirmation E-Mail", html })) {
             return next(new Error("This Email Rejected!", { cause: 400 }));
         }
+
+        // payment process
+        if (order.paymentType === 'card') {
+            const stripe = new Stripe(process.env.STRIPE_KEY);
+            if (req.body?.coupon) {
+                const coupon = await stripe.coupons.create({ percent_off: req.body.coupon.amount, duration: 'once' })
+                console.log(coupon);
+                req.body.couponId = coupon.id
+            }
+            const session = await payment({
+                stripe,
+                payment_method_types: ['card'],
+                mode: 'payment',
+                customer_email: req.user.email,
+                metadata: {
+                    orderId: order._id.toString()
+                },
+                cancel_url: `${process.env.CANCEL_URL}?orderId=${order._id.toString()}`,
+                line_items: order.products.map(product => {
+                    return {
+                        price_data: {
+                            currency: 'egp',
+                            product_data: {
+                                name: product.name
+                            },
+                            unit_amount: product.unitPrice * 100,
+                        },
+                        quantity: product.quantity,
+                    }
+                }),
+                discounts: req.body.couponId ? [{ coupon: req.body.couponId }] : []
+            });
+            return res.status(201).json({ message: "Done", order, session, url: session.url })
+        }
         return res.status(201).json({ message: "Done", order })
-    })
+
+    });
 
 
 export const cancelOrder = asyncHandler(
@@ -158,9 +183,32 @@ export const cancelOrder = asyncHandler(
 export const updateStatus = asyncHandler(
     async (req, res, next) => {
         const { id } = req.params;
-        const order = await orderModel.findOneAndUpdate({ _id: id}, { status: req.body.status, updatedBy:req.user._id })
+        const order = await orderModel.findOneAndUpdate({ _id: id }, { status: req.body.status, updatedBy: req.user._id })
         if (!order) {
             return next(new Error(`In-Valid Order`, { cause: 404 }));
         }
         return res.status(200).json({ message: 'Done!' })
     })
+
+export const webhook = asyncHandler(async (req, res) => {
+    const stripe = new Stripe(process.env.STRIPE_KEY);
+    const sig = req.headers['stripe-signature'];
+
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.endpointSecret);
+    } catch (err) {
+        res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
+    }
+
+    // Handle the event
+    if (event.type != 'checkout.session.completed') {
+        await orderModel.updateOne({ _id: event.data.object.metadata.orderId }, { status: "rejected" })
+        return res.status(400).json({ message: "REjected Order!" })
+    }
+    await orderModel.updateOne({ _id: event.data.object.metadata.orderId }, { status: "placed" })
+    // Return a 200 res to acknowledge receipt of the event
+    res.status(200).send({message:"Done!"});
+})

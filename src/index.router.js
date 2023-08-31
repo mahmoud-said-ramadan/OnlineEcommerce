@@ -28,11 +28,18 @@ const initApp = (app, express) => {
     }
     app.use(cors())
     //convert Buffer Data
-    app.use(express.json({}))
+    app.use((req, res, next) => {
+        if (req.originalUrl == 'order/webhook') {
+            next();
+        }
+        else {
+            express.json({})(req, res, next);
+        }
+    })
 
     //Setup API Routing 
-    app.get("/", (req,res,next)=>{
-        return res.json({message: 'Welcome to E-Commerce'})
+    app.get("/", (req, res, next) => {
+        return res.json({ message: 'Welcome to E-Commerce' })
     })
     app.use(`/auth`, authRouter)
     app.use(`/user`, userRouter)
