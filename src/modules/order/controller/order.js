@@ -129,7 +129,7 @@ export const createOrder = asyncHandler(
                 metadata: {
                     orderId: order._id.toString()
                 },
-                cancel_url: `${process.env.CANCEL_URL}/${order._id.toString()}`,
+                cancel_url: `${process.env.CANCEL_URL}?id=${order._id.toString()}`,
                 line_items: order.products.map(product => {
                     return {
                         price_data: {
@@ -153,7 +153,7 @@ export const createOrder = asyncHandler(
 
 export const cancelOrder = asyncHandler(
     async (req, res, next) => {
-        const { id } = req.params;
+        const { id } = req.query;
         const { reason } = req.body;
         const order = await orderModel.findOne({ _id: id, userId: req.user._id })
         if (!order) {
