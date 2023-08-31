@@ -129,7 +129,7 @@ export const createOrder = asyncHandler(
                 metadata: {
                     orderId: order._id.toString()
                 },
-                cancel_url: `${process.env.CANCEL_URL}?orderId=${order._id.toString()}`,
+                cancel_url: `${process.env.CANCEL_URL}?id=${order._id.toString()}`,
                 line_items: order.products.map(product => {
                     return {
                         price_data: {
