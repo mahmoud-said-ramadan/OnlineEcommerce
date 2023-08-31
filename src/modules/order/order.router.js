@@ -11,9 +11,9 @@ const router = Router()
 
 
 
-// router.get('/', (req, res) => {
-//     res.status(200).json({ message: "order Module" })
-// })
+router.get('/', (req, res) => {
+    res.status(200).json({ message: "order Module" })
+})
 
 
 router.post('/',
@@ -21,7 +21,7 @@ router.post('/',
     validation(validators.createOrder),
     orderController.createOrder
 )
-router.get('/id',
+router.patch('/:id',
     auth(endPoint.cancel),
     validation(validators.cancelOrder),
     orderController.cancelOrder
