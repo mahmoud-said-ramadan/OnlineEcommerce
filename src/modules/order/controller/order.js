@@ -68,13 +68,11 @@ export const createOrder = asyncHandler(
             subTotal += product.totalPrice
         }
 
-        phone ? phone : phone = (decryptPhone(req.user)).phone; 
-        console.log({phone});
         const order = await orderModel.create({
             userId: req.user._id,
             products: finalProductList,
             address,
-            phone,
+            phone: phone? phone : (await decryptPhone(req.user)).phone,
             note,
             coupon: req.body.coupon?.name,
             discount: (subTotal * ((req.body.coupon?.amount || 0) / 100)).toFixed(2),
@@ -248,7 +246,7 @@ export const webhook = asyncHandler(async (req, res) => {
 
 export const refund = asyncHandler(async (req, res) => {
     try {
-    const stripe = new Stripe(process.env.STRIPE_KEY);
+        const stripe = new Stripe(process.env.STRIPE_KEY);
         const { paymentId, amount } = req.body; // Assuming you receive the payment ID and refund amount from the client
 
         // Make the refund request to Stripe
