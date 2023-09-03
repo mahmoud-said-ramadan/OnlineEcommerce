@@ -2,13 +2,13 @@ import joi from "joi";
 import { generalFields } from "../../middleware/validation.js";
 
 export const signUp = joi.object({
-    userName: joi.string().trim().alphanum().min(3).max(25).required(),
+    userName: joi.string().trim().min(3).max(25).required(),
     email: generalFields.email.lowercase(),
     password: generalFields.password,
     cPassword: generalFields.cPassword.valid(joi.ref('password')),
     phone: joi.string().trim().pattern(/^\+?[1-9]\d{1,11}$/).required(),
     gender: joi.string().trim().valid('male', 'female').default('male').lowercase(),
-    DOB: generalFields.DOB.required(),
+    DOB: generalFields.DOB,
     file: generalFields.file,
     address: joi.string().trim().max(250),
 }).required()
