@@ -15,7 +15,7 @@ export const signUp = joi.object({
 
 export const logIn = joi.object({
     email: generalFields.email,
-    password: generalFields.password,
+    password: joi.string().min(8),
 }).required()
 
 export const forgetPassword = joi.object({
