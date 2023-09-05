@@ -39,6 +39,16 @@ export const getProducts = asyncHandler(
         });
     })
 
+export const getOneProduct = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const product = await productModel.findById(id);
+        if (!product) {
+            return next(new Error('This Product Is NOT Exist!', { cause: 404 }));
+        }
+        return res.status(201).json({ message: 'Done!', product });
+    })
+
 export const createProduct = asyncHandler(async (req, res, next) => {
     let { categoryId, subCategoryId, brandId } = req.body;
     if (!await subCategoryModel.findOne({ _id: subCategoryId, categoryId })) {

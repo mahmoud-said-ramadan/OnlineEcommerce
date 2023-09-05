@@ -5,6 +5,7 @@ import express from 'express'
 import initApp from './src/index.router.js'
 import './src/utils/cloudinary.js';
 import './src/utils/scheduler.js'
+
 //set directory dirname 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: path.join(__dirname, './config/.env') })

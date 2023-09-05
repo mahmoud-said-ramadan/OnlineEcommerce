@@ -25,7 +25,11 @@ router.route('/')
         productController.createProduct
     )
 
+router
+
 router.route('/:id')
+    .get(
+        productController.getOneProduct)
     .put(
         auth(endPoint.update),
         fileUpload(fileValidation.image).fields([
