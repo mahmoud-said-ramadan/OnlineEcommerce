@@ -6,6 +6,13 @@ import { deleteDoc, softDeleteDoc } from '../../../utils/handlers/delete-softDel
 import { nanoid } from 'nanoid';
 
 
+export const getOneCoupon = (model) => {
+    return async (req, res, next) => {
+        const docs = await model.findOne({ name: req.body.name }, { deletedBy: { $eq: null } });
+        return res.status(201).json({ message: 'Done!', docs });
+    }
+}
+
 export const getCoupons = asyncHandler(getDocs(couponModel))
 
 export const createCoupon = asyncHandler(

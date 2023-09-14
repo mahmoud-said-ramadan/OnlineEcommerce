@@ -39,6 +39,10 @@ router.post("/logIn",
     authController.logIn
 );
 
+router.post("/googleLogin",
+    authController.googleLogin
+);
+
 router.get("/unsubscribe/:token",
     authController.unsubscribe
 );

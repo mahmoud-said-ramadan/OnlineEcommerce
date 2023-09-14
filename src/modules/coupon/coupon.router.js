@@ -39,4 +39,6 @@ router.route('/:id')
         couponController.deleteCoupon
     )
 
+router.get('/getOneCoupon', couponController.getOneCoupon)
+
 export default router

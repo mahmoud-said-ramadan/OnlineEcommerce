@@ -21,6 +21,7 @@ const productSchema = new Schema({
     deletedBy: { type: Types.ObjectId, ref: 'User' },
     wishList: [{ type: Types.ObjectId, ref: 'User' }],
     avgRate: { type: Number, default: 0 },
+    count: {type: Number, default:0},
     sold: { type: Number, default: 0 },
     // isDeleted: { type: Boolean, default: false },
     customId: String,

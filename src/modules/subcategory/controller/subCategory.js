@@ -22,6 +22,8 @@ export const createSubCategory = asyncHandler(
             return next(new Error('This Category Is NOT Exist!', { cause: 400 }));
         }
         req.body.categoryId = categoryId;
+        // global creation
+        // global creation
         return createDoc(subCategoryModel)(req, res, next);
         // return createDoc(subCategoryModel);
     })

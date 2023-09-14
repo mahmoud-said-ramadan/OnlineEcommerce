@@ -5,6 +5,8 @@ import { sendMail, createMail } from "../../../utils/email.js";
 import { generateToken, verifyToken } from "../../../utils/GenerateAndVerifyToken.js";
 import { nanoid } from "nanoid";
 import cloudinary from "../../../utils/cloudinary.js";
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client();
 
 export const signUp = asyncHandler(async (req, res, next) => {
     const protocol = req.protocol;
@@ -216,4 +218,14 @@ export const unsubscribe = asyncHandler(async (req, res, next) => {
         return next(new Error("NOT REGISTERED!", { cause: 404 }));
     }
     return next(new Error("In-Valid!", { cause: 500 }));
+});
+
+export const googleLogin = asyncHandler(async (req, res, next) => {
+    const { idToken } = req.body;
+    const ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.CLIENT_ID,
+    });
+    const user = ticket.getPayload();
+    console.log(user);
 });

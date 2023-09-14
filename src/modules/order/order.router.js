@@ -33,8 +33,7 @@ router.patch('/updateStatus/:id',
     orderController.updateStatus
 )
 
-// This is your Stripe CLI webhook secret for testing your endpoint locally.
-// const endpointSecret = "whsec_50c96de4533a55c465b6a25b0fd2ffff29f3d7a45e60178bdf528ce6bdf98221";
+
 
 router.post('/webhook', express.raw({ type: 'application/json' }), orderController.webhook);
 
