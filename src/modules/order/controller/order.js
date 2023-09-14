@@ -69,7 +69,7 @@ export const createOrder = asyncHandler(
         }
 
         const order = await orderModel.create({
-            name: firstName + lastName,
+            name: req.body.firstName + req.body.lastName,
             userId: req.user._id,
             products: finalProductList,
             address,

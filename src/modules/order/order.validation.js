@@ -6,7 +6,7 @@ import { generalFields } from '../../middleware/validation.js'
 export const createOrder = joi.object({
     firstName: joi.string().required(),
     lastName: joi.string().required(),
-    note: joi.string().min(1),
+    note: joi.string().min(0),
     address: joi.string().min(1).required(),
     phone: joi.array().items(
         joi.string().pattern(new RegExp(/^(002|\+2)?01[0125][0-9]{8}$/))
