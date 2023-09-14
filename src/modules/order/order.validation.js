@@ -4,6 +4,8 @@ import { generalFields } from '../../middleware/validation.js'
 
 
 export const createOrder = joi.object({
+    firstName: joi.string().required(),
+    lastName: joi.string().required(),
     note: joi.string().min(1),
     address: joi.string().min(1).required(),
     phone: joi.array().items(

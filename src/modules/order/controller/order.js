@@ -69,10 +69,11 @@ export const createOrder = asyncHandler(
         }
 
         const order = await orderModel.create({
+            name: firstName + lastName,
             userId: req.user._id,
             products: finalProductList,
             address,
-            phone: phone? phone : (await decryptPhone(req.user)).phone,
+            phone: phone ? phone : (await decryptPhone(req.user)).phone,
             note,
             coupon: req.body.coupon?.name,
             discount: (subTotal * ((req.body.coupon?.amount || 0) / 100)).toFixed(2),
