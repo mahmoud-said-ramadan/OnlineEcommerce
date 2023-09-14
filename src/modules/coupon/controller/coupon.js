@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 
 
 export const getOneCoupon = asyncHandler(async (req, res, next) => {
-    const coupon = await model.findOne({ name: req.body.name }, { deletedBy: { $eq: null } });
+    const coupon = await couponModel.findOne({ name: req.body.name }, { deletedBy: { $eq: null } });
     if (!coupon) {
         return next(new Error('This Coupon Name Is NOT Valid!', { cause: 404 }));
     }
